@@ -104,7 +104,10 @@ function SimulateDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const parsed = messageInput.safeParse(f);
-    if (!parsed.success) return toast.error(parsed.error.issues[0]?.path.join(".") + ": " + parsed.error.issues[0]?.message);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.path.join(".") + ": " + parsed.error.issues[0]?.message);
+      return;
+    }
     setBusy(true);
     try {
       await fn({ data: parsed.data });

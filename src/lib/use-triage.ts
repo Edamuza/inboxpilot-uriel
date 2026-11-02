@@ -18,7 +18,7 @@ export function useTriage() {
       return n;
     });
 
-  async function one(id: string, quiet = false): Promise<{ ok: boolean; status?: number }> {
+  async function one(id: string, quiet = false): Promise<{ ok: boolean; status?: number | undefined }> {
     mark(id, true);
     try {
       const r = await fn({ data: { id } });
@@ -38,11 +38,14 @@ export function useTriage() {
   }
 
   async function all(ids: string[]) {
-    if (!ids.length) return toast.info("No new messages to triage");
+    if (!ids.length) {
+      toast.info("No new messages to triage");
+      return;
+    }
     setProgress({ done: 0, total: ids.length });
     let ok = 0;
     for (let i = 0; i < ids.length; i++) {
-      const r = await one(ids[i], true);
+      const r = await one(ids[i]!, true);
       if (r.ok) ok++;
       else if (r.status === 402 || r.status === 403 || r.status === 429) break; // stop the batch on account/rate errors
       setProgress({ done: i + 1, total: ids.length });
