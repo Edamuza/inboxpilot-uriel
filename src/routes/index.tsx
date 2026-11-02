@@ -27,16 +27,17 @@ export const Route = createFileRoute("/")({
   component: InboxPage,
 });
 
-const TABS = ["All", "New", "Awaiting approval", "Sent", "Rejected", "Spam"] as const;
+const TABS = ["All", "New", "Triaged", "Awaiting approval", "Sent", "Rejected", "Spam"] as const;
 
 function InboxPage() {
   const { data, isLoading, error } = useQuery(messagesQuery);
   const [tab, setTab] = useState<(typeof TABS)[number]>("All");
   const [open, setOpen] = useState(false);
   const triage = useTriage();
-  const rows = (data ?? []).filter((m) => tab === "All" || m.status === tab);
+  const match = (m: { status: string; triaged_at: string | null }, t: string) => t === "All" || (t === "Triaged" ? !!m.triaged_at : m.status === t);
+  const rows = (data ?? []).filter((m) => match(m, tab));
   const newIds = (data ?? []).filter((m) => m.status === "New").map((m) => m.id);
-  const count = (s: string) => (data ?? []).filter((m) => s === "All" || m.status === s).length;
+  const count = (s: string) => (data ?? []).filter((m) => match(m, s)).length;
 
   return (
     <>
@@ -48,7 +49,7 @@ function InboxPage() {
             <Button variant="outline" onClick={() => setOpen(true)}><Plus className="h-4 w-4" />Simulate new message</Button>
             <Button onClick={() => triage.all(newIds)} disabled={!!triage.progress || newIds.length === 0}>
               {triage.progress ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              {triage.progress ? `Triaging ${triage.progress.done + 1}/${triage.progress.total}…` : `Triage all new (${newIds.length})`}
+              {triage.progress ? `Triaging… ${triage.progress.done}/${triage.progress.total} done` : `Triage all new (${newIds.length})`}
             </Button>
           </>
         }

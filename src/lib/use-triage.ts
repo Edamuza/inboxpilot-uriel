@@ -44,12 +44,20 @@ export function useTriage() {
     }
     setProgress({ done: 0, total: ids.length });
     let ok = 0;
-    for (let i = 0; i < ids.length; i++) {
-      const r = await one(ids[i]!, true);
-      if (r.ok) ok++;
-      else if (r.status === 402 || r.status === 403 || r.status === 429) break; // stop the batch on account/rate errors
-      setProgress({ done: i + 1, total: ids.length });
-    }
+    let done = 0;
+    let next = 0;
+    let stopped = false;
+    const worker = async () => {
+      while (!stopped && next < ids.length) {
+        const id = ids[next++]!;
+        const r = await one(id, true);
+        if (r.ok) ok++;
+        else if (r.status === 402 || r.status === 403 || r.status === 429) stopped = true; // stop the batch on account/rate errors
+        done++;
+        setProgress({ done, total: ids.length });
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(3, ids.length) }, worker));
     setProgress(null);
     toast.success(`Triaged ${ok} of ${ids.length} messages`);
   }

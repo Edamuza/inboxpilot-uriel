@@ -36,15 +36,24 @@ function AboutPage() {
       </Section>
       <Section title="Architecture">
         <pre className="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{`React (TanStack Start) UI
-   │  server functions (triage, approve, reject, save, reset, KB edits)
+   │  server functions (run on the server, service role)
    ▼
-Server runtime ──► Lovable AI (tool-calling agent loop)
+Server functions ──► Lovable AI (model calls server-side only)
    │
    ▼
-Lovable Cloud database (RLS: public read-only; writes via server)
+Lovable Cloud database
+   RLS enabled on all 7 tables, no direct anon access:
    messages · proposed_actions · knowledge_base · availability
-   bookings · tickets · audit_log
-Public webhook: POST /api/public/inbound-message`}</pre>
+   bookings · tickets · audit_log`}</pre>
+        <p className="mt-3 font-medium">Server functions</p>
+        <ul className="mt-1 list-disc space-y-0.5 pl-5 font-mono text-xs">
+          <li>triageMessage → runAgent tool loop (search_knowledge_base, check_availability, propose_booking, propose_ticket, flag_spam, submit_triage)</li>
+          <li>approveMessage · rejectMessage · saveDraft · simulateMessage</li>
+          <li>resetDemo · ensureFreshDemo (re-seeds after 24h idle, tops up the 14-day availability)</li>
+          <li>upsertKb / deleteKb</li>
+          <li>read functions: getMessages, getMessage, getKb, getAvailability, getRecords, getAudit</li>
+        </ul>
+        <p className="mt-3">Public webhook route (the "inbound-message" edge-style function): <span className="font-mono text-xs">POST /api/public/inbound-message</span></p>
       </Section>
       <Section title="Inbound webhook">
         <p>New messages can be posted from any form or integration. Fields are validated; bodies over 5,000 characters are rejected.</p>

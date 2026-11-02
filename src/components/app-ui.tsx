@@ -1,11 +1,11 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Inbox, ListChecks, CalendarDays, BookOpen, ScrollText, BarChart3, Info, RotateCcw, Loader2, Plane } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { resetDemo } from "@/lib/inbox.functions";
+import { resetDemo, ensureFreshDemo } from "@/lib/inbox.functions";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -21,7 +21,26 @@ const NAV = [
   { to: "/about", label: "About", icon: Info },
 ] as const;
 
+function useFreshDemo() {
+  const fresh = useServerFn(ensureFreshDemo);
+  const qc = useQueryClient();
+  const ran = useRef(false);
+  useEffect(() => {
+    if (ran.current) return;
+    ran.current = true;
+    fresh()
+      .then((r) => {
+        if (r.result === "reset") {
+          toast.info("Demo data refreshed for today");
+          qc.invalidateQueries();
+        } else if (r.result === "topped_up") qc.invalidateQueries({ queryKey: ["availability"] });
+      })
+      .catch(() => {});
+  }, [fresh, qc]);
+}
+
 export function Shell({ children }: { children: ReactNode }) {
+  useFreshDemo();
   return (
     <div className="min-h-screen bg-background">
       <div className="bg-accent px-4 py-1.5 text-center text-xs font-medium text-accent-foreground">
