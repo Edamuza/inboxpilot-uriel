@@ -1,10 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-async function q<T>(p: PromiseLike<{ data: T; error: { message: string } | null }>): Promise<T> {
+async function q<T>(p: PromiseLike<{ data: T; error: { message: string } | null }>): Promise<NonNullable<T>> {
   const { data, error } = await p;
   if (error) throw new Error(error.message);
-  return data;
+  return data as NonNullable<T>;
 }
 
 export const messagesQuery = queryOptions({

@@ -139,7 +139,7 @@ const PRIORITY_STYLE: Record<string, string> = {
   medium: "border-warning text-accent-foreground",
   low: "border-border text-muted-foreground",
 };
-export function Chip({ children, tone }: { children: ReactNode; tone?: string }) {
+export function Chip({ children, tone }: { children: ReactNode; tone?: string | null | undefined }) {
   return (
     <span className={cn("inline-flex whitespace-nowrap rounded-md border px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wide", tone ? PRIORITY_STYLE[tone] : "border-border text-muted-foreground")}>
       {children}
