@@ -59,9 +59,12 @@ Lovable Cloud database
       <Section title="Inbound webhook">
         <p>New messages can be posted from any form or integration. Fields are validated; bodies over 5,000 characters are rejected.</p>
         <p className="mt-2 break-all font-mono text-xs">{url}</p>
-        <div className="relative mt-3">
-          <pre ref={curlRef} className="overflow-x-auto rounded-md bg-sidebar p-3 pt-12 sm:pt-3 sm:pr-24 font-mono text-xs text-sidebar-foreground">{curl}</pre>
-          <CopyButton text={curl} targetRef={curlRef} label="Copy curl example" />
+        <div className="mt-3">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <span className="text-xs font-medium text-muted-foreground">curl example</span>
+            <CopyButton text={curl} targetRef={curlRef} label="Copy curl example" />
+          </div>
+          <pre ref={curlRef} className="overflow-x-auto rounded-md bg-sidebar p-3 font-mono text-xs text-sidebar-foreground">{curl}</pre>
         </div>
       </Section>
       <Section title="What I'd do next in a real deployment">
@@ -139,7 +142,7 @@ function CopyButton({ text, targetRef, label }: { text: string; targetRef: React
     toast.error("Copy is blocked in this browser. The text is selected — press Cmd/Ctrl+C to copy.");
   }
   return (
-    <Button size="sm" variant="secondary" className="absolute right-2 top-2" aria-label={label} onClick={onClick}>
+    <Button size="sm" variant="secondary" aria-label={label} onClick={onClick}>
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
       <span aria-live="polite">{copied ? "Copied" : "Copy"}</span>
     </Button>
