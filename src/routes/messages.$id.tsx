@@ -170,7 +170,7 @@ function DetailPage() {
 
           {awaiting && (
             <div className="flex flex-wrap gap-2">
-              <Button disabled={!!busy || spamBlocked} onClick={() => run("approve", () => approve({ data: { id: m.id, reply: isSpam ? null : reply, approvedActionIds: [...selected] } }), isSpam ? "Flagged as spam" : "Approved — reply sent (simulated)")}>
+              <Button disabled={!!busy || spamBlocked || bookingBlocked} onClick={() => run("approve", () => approve({ data: { id: m.id, reply: isSpam ? null : reply, approvedActionIds: [...selected] } }), isSpam ? "Flagged as spam" : "Approved — reply sent (simulated)")}>
                 {busy === "approve" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} {isSpam ? "Approve (flag spam)" : "Approve & send"}
               </Button>
               {!isSpam && (
@@ -180,6 +180,7 @@ function DetailPage() {
               )}
               <Button variant="destructive" disabled={!!busy} onClick={() => setRejectOpen(true)}><X className="h-4 w-4" /> Reject</Button>
               {spamBlocked && <p className="w-full text-xs text-muted-foreground">No reply to send — check flag_spam to approve, or reject instead.</p>}
+              {bookingBlocked && <p className="w-full text-xs text-muted-foreground">The draft confirms this booking — edit the reply so it doesn't claim a confirmed booking, or check create_booking.</p>}
             </div>
           )}
 
