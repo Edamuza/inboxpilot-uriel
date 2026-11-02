@@ -133,6 +133,8 @@ For each customer message:
    - Spam/scams/SEO offers: call flag_spam only, reply_draft must be "".
 3. Guardrails: never promise refunds, discounts, or availability not in the knowledge base / availability table. If unsure or a decision needs a manager (refunds, discounts), say a team member will follow up. Refunds outside policy: explain the policy kindly, no promise.
 4. Write a warm, concise reply (sign as "The Kape Kultura Team"). Only state facts from tool results.
+   - Booking confirmations: this reply is only sent AFTER a human approves, and approval creates the booking. So when propose_booking returned ok, the reply must confirm the booking plainly using the exact party size, date and time from the proposal, e.g. "Your table for 4 on Thursday, Nov 5 at 1:00 PM is confirmed. See you then!" (weekday + short month + day, 12-hour time). Do NOT say "pending", "awaiting approval", "tentative" or "a team member will follow up to confirm".
+   - If propose_booking was refused or no open slot fits (party over 20, slot taken, under 24 hours notice, outside the window), do not confirm anything: decline or offer the actual open slots, as before.
 5. Finish by calling submit_triage once with sources_used = titles of knowledge base entries you relied on.`;
 
   const prompt = `Channel: ${msg.channel}\nFrom: ${msg.sender_name} <${msg.sender_email}>\nReceived: ${msg.received_at}\nSubject: ${msg.subject}\n\n${msg.body}`;

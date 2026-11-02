@@ -67,6 +67,19 @@ export const approveMessage = createServerFn({ method: "POST" })
     const isSpamDraft = m.intent === "spam" || !m.reply_draft;
     const flagApproved = (actions ?? []).some((a) => a.action_type === "flag_spam" && data.approvedActionIds.includes(a.id));
     if (isSpamDraft && !flagApproved) return { ok: false as const, error: "There is no reply to send. Check flag_spam to approve, or reject instead." };
+    // The agent's draft confirms the booking. If the booking won't be created, the unedited draft must not be sent.
+    const booking = (actions ?? []).find((a) => a.action_type === "create_booking");
+    if (booking) {
+      const bp = booking.params as Record<string, string | number>;
+      let willBook = data.approvedActionIds.includes(booking.id);
+      if (willBook) {
+        const { data: s } = await db.from("availability").select("is_taken").eq("slot_date", String(bp["date"])).eq("slot_time", String(bp["time"])).maybeSingle();
+        willBook = !!s && !s.is_taken;
+      }
+      const outgoing = data.reply ?? m.reply_draft ?? "";
+      if (!willBook && outgoing === (m.original_draft ?? ""))
+        return { ok: false as const, error: "The draft confirms a booking that won't be created. Edit the reply so it doesn't claim a confirmed booking, or re-run the agent." };
+    }
     let spam = false;
     const results: string[] = [];
     for (const a of actions ?? []) {

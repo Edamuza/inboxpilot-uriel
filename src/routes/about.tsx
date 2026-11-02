@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Copy, ExternalLink } from "lucide-react";
+import { Check, Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader, Card } from "@/components/app-ui";
 
@@ -25,6 +25,7 @@ function AboutPage() {
   -H "Content-Type: application/json" \\
   -d '{"sender_name":"Jamie Test","sender_email":"jamie@example.com","channel":"Website form","subject":"Catering for 40?","body":"Hi! Do you cater Premium for 40 people in BGC?"}'`;
 
+  const curlRef = useRef<HTMLPreElement>(null);
   return (
     <div className="max-w-3xl space-y-6">
       <PageHeader title="About this project" subtitle="InboxPilot — portfolio project by Uriel Papa" />
@@ -59,8 +60,8 @@ Lovable Cloud database
         <p>New messages can be posted from any form or integration. Fields are validated; bodies over 5,000 characters are rejected.</p>
         <p className="mt-2 break-all font-mono text-xs">{url}</p>
         <div className="relative mt-3">
-          <pre className="overflow-x-auto rounded-md bg-sidebar p-3 pr-12 font-mono text-xs text-sidebar-foreground">{curl}</pre>
-          <Button size="sm" variant="secondary" className="absolute right-2 top-2" onClick={() => navigator.clipboard.writeText(curl).then(() => toast.success("Copied"), () => toast.error("Copy failed"))}><Copy className="h-3.5 w-3.5" /></Button>
+          <pre ref={curlRef} className="overflow-x-auto rounded-md bg-sidebar p-3 pt-12 sm:pt-3 sm:pr-24 font-mono text-xs text-sidebar-foreground">{curl}</pre>
+          <CopyButton text={curl} targetRef={curlRef} label="Copy curl example" />
         </div>
       </Section>
       <Section title="What I'd do next in a real deployment">
@@ -86,5 +87,61 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h2 className="text-xl font-semibold">{title}</h2>
       <div className="mt-2 text-sm leading-relaxed text-foreground/90">{children}</div>
     </Card>
+  );
+}
+
+async function copyText(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    /* fall through to execCommand */
+  }
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.position = "fixed";
+  ta.style.top = "-1000px";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try {
+    ok = document.execCommand("copy");
+  } catch {
+    ok = false;
+  }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function CopyButton({ text, targetRef, label }: { text: string; targetRef: React.RefObject<HTMLElement | null>; label: string }) {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+  async function onClick() {
+    if (await copyText(text)) {
+      setCopied(true);
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = setTimeout(() => setCopied(false), 2000);
+      return;
+    }
+    const el = targetRef.current;
+    if (el) {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    }
+    toast.error("Copy is blocked in this browser. The text is selected — press Cmd/Ctrl+C to copy.");
+  }
+  return (
+    <Button size="sm" variant="secondary" className="absolute right-2 top-2" aria-label={label} onClick={onClick}>
+      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+      <span aria-live="polite">{copied ? "Copied" : "Copy"}</span>
+    </Button>
   );
 }
