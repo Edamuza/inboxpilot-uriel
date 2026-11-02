@@ -64,6 +64,9 @@ export const approveMessage = createServerFn({ method: "POST" })
       db.from("audit_log").insert({ message_id: m.id, message_subject: m.subject, actor: "human", event, details: details as never });
 
     const { data: actions } = await db.from("proposed_actions").select("*").eq("message_id", m.id).eq("status", "pending");
+    const isSpamDraft = m.intent === "spam" || !m.reply_draft;
+    const flagApproved = (actions ?? []).some((a) => a.action_type === "flag_spam" && data.approvedActionIds.includes(a.id));
+    if (isSpamDraft && !flagApproved) return { ok: false as const, error: "There is no reply to send. Check flag_spam to approve, or reject instead." };
     let spam = false;
     const results: string[] = [];
     for (const a of actions ?? []) {
@@ -106,6 +109,16 @@ export const approveMessage = createServerFn({ method: "POST" })
     }
     return { ok: true as const };
   });
+
+export const ensureFreshDemo = createServerFn({ method: "POST" }).handler(async () => {
+  const db = await admin();
+  const { data, error } = await db.rpc("ensure_fresh_demo");
+  if (error) {
+    console.error("ensure_fresh_demo failed", error);
+    return { result: "error" as const };
+  }
+  return { result: data as "reset" | "topped_up" };
+});
 
 export const resetDemo = createServerFn({ method: "POST" }).handler(async () => {
   const db = await admin();

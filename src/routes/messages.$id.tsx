@@ -56,7 +56,9 @@ function DetailPage() {
   if (!m) return <Empty title="Message not found" hint="It may have been removed by a demo reset." />;
 
   const awaiting = m.status === "Awaiting approval";
-  const isSpam = m.intent === "spam";
+  const isSpam = m.intent === "spam" || (!!m.triaged_at && !m.reply_draft);
+  const spamFlag = pending.find((a) => a.action_type === "flag_spam");
+  const spamBlocked = isSpam && !(spamFlag && selected.has(spamFlag.id));
   const refresh = () => qc.invalidateQueries();
 
   async function run(label: string, f: () => Promise<unknown>, okMsg: string) {
@@ -166,7 +168,7 @@ function DetailPage() {
 
           {awaiting && (
             <div className="flex flex-wrap gap-2">
-              <Button disabled={!!busy} onClick={() => run("approve", () => approve({ data: { id: m.id, reply: isSpam ? null : reply, approvedActionIds: [...selected] } }), isSpam ? "Flagged as spam" : "Approved — reply sent (simulated)")}>
+              <Button disabled={!!busy || spamBlocked} onClick={() => run("approve", () => approve({ data: { id: m.id, reply: isSpam ? null : reply, approvedActionIds: [...selected] } }), isSpam ? "Flagged as spam" : "Approved — reply sent (simulated)")}>
                 {busy === "approve" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} {isSpam ? "Approve (flag spam)" : "Approve & send"}
               </Button>
               {!isSpam && (
@@ -175,6 +177,7 @@ function DetailPage() {
                 </Button>
               )}
               <Button variant="destructive" disabled={!!busy} onClick={() => setRejectOpen(true)}><X className="h-4 w-4" /> Reject</Button>
+              {spamBlocked && <p className="w-full text-xs text-muted-foreground">No reply to send — check flag_spam to approve, or reject instead.</p>}
             </div>
           )}
 

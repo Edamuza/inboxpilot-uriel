@@ -285,7 +285,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ensure_fresh_demo: { Args: never; Returns: string }
       reset_demo: { Args: never; Returns: undefined }
+      reset_demo_unlocked: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
