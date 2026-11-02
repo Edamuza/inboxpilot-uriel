@@ -15,6 +15,13 @@
       "when": 1793639070500,
       "tag": "0001_fix_reset_demo_where",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793639163875,
+      "tag": "0002_close_direct_public_reads",
+      "breakpoints": true
     }
   ]
 }
