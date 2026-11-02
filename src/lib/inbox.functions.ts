@@ -110,7 +110,10 @@ export const approveMessage = createServerFn({ method: "POST" })
 export const resetDemo = createServerFn({ method: "POST" }).handler(async () => {
   const db = await admin();
   const { error } = await db.rpc("reset_demo");
-  if (error) throw new Error("Reset failed");
+  if (error) {
+    console.error("reset_demo failed", error);
+    throw new Error("Reset failed");
+  }
   return { ok: true };
 });
 
