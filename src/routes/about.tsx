@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Copy, Github, Linkedin } from "lucide-react";
+import { Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader, Card } from "@/components/app-ui";
 
@@ -64,8 +64,8 @@ Public webhook: POST /api/public/inbound-message`}</pre>
       </Section>
       <Card className="flex flex-wrap items-center gap-4 p-5">
         <p className="text-sm">Built by <strong>Uriel Papa</strong></p>
-        <a className="inline-flex items-center gap-1 text-sm text-primary hover:underline" href="https://github.com/Edamuza" target="_blank" rel="noreferrer"><Github className="h-4 w-4" />github.com/Edamuza</a>
-        <a className="inline-flex items-center gap-1 text-sm text-primary hover:underline" href="https://linkedin.com/in/uriel-papa-vitese01" target="_blank" rel="noreferrer"><Linkedin className="h-4 w-4" />linkedin.com/in/uriel-papa-vitese01</a>
+        <a className="inline-flex items-center gap-1 text-sm text-primary hover:underline" href="https://github.com/Edamuza" target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" />github.com/Edamuza</a>
+        <a className="inline-flex items-center gap-1 text-sm text-primary hover:underline" href="https://linkedin.com/in/uriel-papa-vitese01" target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" />linkedin.com/in/uriel-papa-vitese01</a>
       </Card>
     </div>
   );

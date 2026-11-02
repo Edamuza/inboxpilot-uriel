@@ -10,11 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuditRouteImport } from './routes/audit'
+import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as MetricsRouteImport } from './routes/metrics'
+import { Route as QueueRouteImport } from './routes/queue'
+import { Route as RecordsRouteImport } from './routes/records'
+import { Route as MessagesIdRouteImport } from './routes/messages.$id'
 import { Route as ApiPublicInboundMessageRouteImport } from './routes/api/public/inbound-message'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuditRoute = AuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KnowledgeRoute = KnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MetricsRoute = MetricsRouteImport.update({
+  id: '/metrics',
+  path: '/metrics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QueueRoute = QueueRouteImport.update({
+  id: '/queue',
+  path: '/queue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecordsRoute = RecordsRouteImport.update({
+  id: '/records',
+  path: '/records',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesIdRoute = MessagesIdRouteImport.update({
+  id: '/messages/$id',
+  path: '/messages/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicInboundMessageRoute = ApiPublicInboundMessageRouteImport.update({
@@ -25,27 +67,83 @@ const ApiPublicInboundMessageRoute = ApiPublicInboundMessageRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/audit': typeof AuditRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/metrics': typeof MetricsRoute
+  '/queue': typeof QueueRoute
+  '/records': typeof RecordsRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/api/public/inbound-message': typeof ApiPublicInboundMessageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/audit': typeof AuditRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/metrics': typeof MetricsRoute
+  '/queue': typeof QueueRoute
+  '/records': typeof RecordsRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/api/public/inbound-message': typeof ApiPublicInboundMessageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/audit': typeof AuditRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/metrics': typeof MetricsRoute
+  '/queue': typeof QueueRoute
+  '/records': typeof RecordsRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/api/public/inbound-message': typeof ApiPublicInboundMessageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/inbound-message'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/audit'
+    | '/knowledge'
+    | '/metrics'
+    | '/queue'
+    | '/records'
+    | '/messages/$id'
+    | '/api/public/inbound-message'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/inbound-message'
-  id: '__root__' | '/' | '/api/public/inbound-message'
+  to:
+    | '/'
+    | '/about'
+    | '/audit'
+    | '/knowledge'
+    | '/metrics'
+    | '/queue'
+    | '/records'
+    | '/messages/$id'
+    | '/api/public/inbound-message'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/audit'
+    | '/knowledge'
+    | '/metrics'
+    | '/queue'
+    | '/records'
+    | '/messages/$id'
+    | '/api/public/inbound-message'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AuditRoute: typeof AuditRoute
+  KnowledgeRoute: typeof KnowledgeRoute
+  MetricsRoute: typeof MetricsRoute
+  QueueRoute: typeof QueueRoute
+  RecordsRoute: typeof RecordsRoute
+  MessagesIdRoute: typeof MessagesIdRoute
   ApiPublicInboundMessageRoute: typeof ApiPublicInboundMessageRoute
 }
 
@@ -56,6 +154,55 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/knowledge': {
+      id: '/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof KnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/metrics': {
+      id: '/metrics'
+      path: '/metrics'
+      fullPath: '/metrics'
+      preLoaderRoute: typeof MetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/queue': {
+      id: '/queue'
+      path: '/queue'
+      fullPath: '/queue'
+      preLoaderRoute: typeof QueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/records': {
+      id: '/records'
+      path: '/records'
+      fullPath: '/records'
+      preLoaderRoute: typeof RecordsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages/$id': {
+      id: '/messages/$id'
+      path: '/messages/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof MessagesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/inbound-message': {
@@ -70,6 +217,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AuditRoute: AuditRoute,
+  KnowledgeRoute: KnowledgeRoute,
+  MetricsRoute: MetricsRoute,
+  QueueRoute: QueueRoute,
+  RecordsRoute: RecordsRoute,
+  MessagesIdRoute: MessagesIdRoute,
   ApiPublicInboundMessageRoute: ApiPublicInboundMessageRoute,
 }
 export const routeTree = rootRouteImport
