@@ -59,6 +59,8 @@ function DetailPage() {
   const isSpam = m.intent === "spam" || (!!m.triaged_at && !m.reply_draft);
   const spamFlag = pending.find((a) => a.action_type === "flag_spam");
   const spamBlocked = isSpam && !(spamFlag && selected.has(spamFlag.id));
+  const bookingAction = pending.find((a) => a.action_type === "create_booking");
+  const bookingBlocked = !isSpam && !!bookingAction && !selected.has(bookingAction.id) && reply === (m.original_draft ?? "");
   const refresh = () => qc.invalidateQueries();
 
   async function run(label: string, f: () => Promise<unknown>, okMsg: string) {
