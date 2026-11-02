@@ -10,33 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicInboundMessageRouteImport } from './routes/api/public/inbound-message'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicInboundMessageRoute = ApiPublicInboundMessageRouteImport.update({
+  id: '/api/public/inbound-message',
+  path: '/api/public/inbound-message',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/inbound-message': typeof ApiPublicInboundMessageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/inbound-message': typeof ApiPublicInboundMessageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/inbound-message': typeof ApiPublicInboundMessageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/api/public/inbound-message'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api/public/inbound-message'
+  id: '__root__' | '/' | '/api/public/inbound-message'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicInboundMessageRoute: typeof ApiPublicInboundMessageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/inbound-message': {
+      id: '/api/public/inbound-message'
+      path: '/api/public/inbound-message'
+      fullPath: '/api/public/inbound-message'
+      preLoaderRoute: typeof ApiPublicInboundMessageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicInboundMessageRoute: ApiPublicInboundMessageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
