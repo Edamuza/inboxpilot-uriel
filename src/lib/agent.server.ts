@@ -7,14 +7,14 @@ import type { Database } from "@/integrations/supabase/types";
 type Admin = SupabaseClient<Database>;
 const MODEL = "openai/gpt-6-astra";
 
-export type AgentResult = { ok: true } | { ok: false; error: string; status?: number };
+export type AgentResult = { ok: true } | { ok: false; error: string; status?: number | undefined };
 
 function summarize(v: unknown, max = 400) {
   const s = typeof v === "string" ? v : JSON.stringify(v);
   return s.length > max ? s.slice(0, max) + "…" : s;
 }
 
-export function friendlyAiError(err: unknown): { error: string; status?: number } {
+export function friendlyAiError(err: unknown): { error: string; status?: number | undefined } {
   const status = APICallError.isInstance(err) ? err.statusCode : (err as { statusCode?: number })?.statusCode;
   if (status === 429) return { status, error: "The AI is rate limited right now. Please wait a moment and try again." };
   if (status === 402) return { status, error: "AI credits are exhausted for this workspace. Add credits in Settings → Plans & credits." };
@@ -25,7 +25,7 @@ export function friendlyAiError(err: unknown): { error: string; status?: number 
 }
 
 export async function runAgent(admin: Admin, messageId: string): Promise<AgentResult> {
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) return { ok: false, error: "AI is not configured (missing key)." };
 
   const { data: msg, error } = await admin.from("messages").select("*").eq("id", messageId).single();

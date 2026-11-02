@@ -36,7 +36,7 @@ export const saveDraft = createServerFn({ method: "POST" })
     const { data: m } = await db.from("messages").select("subject,original_draft").eq("id", data.id).single();
     const edited = (m?.original_draft ?? "") !== data.reply;
     await db.from("messages").update({ reply_draft: data.reply, edited }).eq("id", data.id);
-    await db.from("audit_log").insert({ message_id: data.id, message_subject: m?.subject, actor: "human", event: "draft_edited", details: { edited_vs_agent: edited, length: data.reply.length } });
+    await db.from("audit_log").insert({ message_id: data.id, message_subject: m?.subject ?? null, actor: "human", event: "draft_edited", details: { edited_vs_agent: edited, length: data.reply.length } });
     return { ok: true };
   });
 
@@ -47,7 +47,7 @@ export const rejectMessage = createServerFn({ method: "POST" })
     const { data: m } = await db.from("messages").select("subject").eq("id", data.id).single();
     await db.from("messages").update({ status: "Rejected", reject_reason: data.reason, decided_at: new Date().toISOString() }).eq("id", data.id);
     await db.from("proposed_actions").update({ status: "rejected" }).eq("message_id", data.id).eq("status", "pending");
-    await db.from("audit_log").insert({ message_id: data.id, message_subject: m?.subject, actor: "human", event: "rejected", details: { reason: data.reason } });
+    await db.from("audit_log").insert({ message_id: data.id, message_subject: m?.subject ?? null, actor: "human", event: "rejected", details: { reason: data.reason } });
     return { ok: true };
   });
 
@@ -74,7 +74,7 @@ export const approveMessage = createServerFn({ method: "POST" })
       }
       const p = a.params as Record<string, string | number>;
       if (a.action_type === "create_booking") {
-        const { data: slot } = await db.from("availability").select("id,is_taken").eq("slot_date", String(p.date)).eq("slot_time", String(p.time)).maybeSingle();
+        const { data: slot } = await db.from("availability").select("id,is_taken").eq("slot_date", String(p["date"])).eq("slot_time", String(p["time"])).maybeSingle();
         if (!slot || slot.is_taken) {
           await db.from("proposed_actions").update({ status: "failed" }).eq("id", a.id);
           await log("action_failed", { action: a.action_type, reason: "Slot no longer open", params: p });
@@ -82,9 +82,9 @@ export const approveMessage = createServerFn({ method: "POST" })
           continue;
         }
         await db.from("availability").update({ is_taken: true }).eq("id", slot.id);
-        await db.from("bookings").insert({ message_id: m.id, customer_name: String(p.name), booking_date: String(p.date), booking_time: String(p.time), party_size: Number(p.party_size) });
+        await db.from("bookings").insert({ message_id: m.id, customer_name: String(p["name"]), booking_date: String(p["date"]), booking_time: String(p["time"]), party_size: Number(p["party_size"]) });
       } else if (a.action_type === "create_ticket") {
-        await db.from("tickets").insert({ message_id: m.id, title: String(p.title), priority: String(p.priority ?? "medium") });
+        await db.from("tickets").insert({ message_id: m.id, title: String(p["title"]), priority: String(p["priority"] ?? "medium") });
       } else if (a.action_type === "flag_spam") {
         spam = true;
       }
